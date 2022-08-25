@@ -28,4 +28,4 @@ output = json
 
 ## Usage:
 run ```.\SetAwsCredentials.ps1``` and select the profile from the menu.
-</br>The script will save your credentials in C:\Users\\[YourUserName]\\.aws\credentials
+</br>The script will save your credentials in *C:\Users\\[YourUserName]\\.aws\credentials*
