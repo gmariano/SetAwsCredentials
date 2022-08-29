@@ -55,7 +55,7 @@ $selectedAccount = $accounts[$selectedProfile]
 $selectedRole = $roles[$selectedProfile]
 $selectedSSORegion = $sso_regions[$selectedProfile]
 $selectedRegion = $regions[$selectedProfile]
-Write-Host "Profile: ${profile}, Account: ${selectedAccount}, Role: ${selectedRole}, SSORegion: ${selectedSSORegion}"
+Write-Host "Profile: ${selectedProfile}, Account: ${selectedAccount}, Role: ${selectedRole}, SSORegion: ${selectedSSORegion}"
 
 $accessToken = GetAwsAccessToken
 if([string]::IsNullOrEmpty($accessToken))
