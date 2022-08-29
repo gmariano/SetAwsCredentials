@@ -32,26 +32,30 @@ function GetAwsAccessToken()
 $awsConfigFilePath = "C:\Users\${env:UserName}\.aws\config"
 $fileContent = Get-Content $awsConfigFilePath
 $text = [string]::Join("`n", $fileContent)
-$profileMatches = [regex]::Matches($text, '(\[profile (.*))]((.|\n)*?)(sso_region = (.*))((.|\n)*?)(sso_account_id = (.*))((.|\n)*?)(sso_role_name = (.*))')
+$profileMatches = [regex]::Matches($text, '(\[profile (.*))]((.|\n)*?)(sso_region = (.*))((.|\n)*?)(sso_account_id = (.*))((.|\n)*?)(sso_role_name = (.*))((.|\n)*?)(region = (.*))')
 $profiles=@{}
-$regions=@{}
+$sso_regions=@{}
 $accounts=@{}
 $roles=@{}
+$regions=@{}
 Foreach($profileMatch in ($profileMatches | Sort-Object -Property Value)) {
 	$profile = $profileMatch.Groups[2].Value
 	$profiles.Add($profile, $profile)
-	$region = $profileMatch.Groups[6].Value
-	$regions.Add($profile, $region)
+	$sso_region = $profileMatch.Groups[6].Value
+	$sso_regions.Add($profile, $sso_region)
 	$account = $profileMatch.Groups[10].Value
 	$accounts.Add($profile, $account)
 	$role = $profileMatch.Groups[14].Value
 	$roles.Add($profile, $role)
+	$region = $profileMatch.Groups[18].Value
+	$regions.Add($profile, $region)
 	}
 $selectedProfile = fShowMenu "Choose profile" $profiles
 $selectedAccount = $accounts[$selectedProfile]
 $selectedRole = $roles[$selectedProfile]
+$selectedSSORegion = $sso_regions[$selectedProfile]
 $selectedRegion = $regions[$selectedProfile]
-Write-Host "Profile: ${profile}, Account: ${selectedAccount}, Role: ${selectedRole}, Region: ${selectedRegion}"
+Write-Host "Profile: ${profile}, Account: ${selectedAccount}, Role: ${selectedRole}, SSORegion: ${selectedSSORegion}"
 
 $accessToken = GetAwsAccessToken
 if([string]::IsNullOrEmpty($accessToken))
@@ -66,7 +70,7 @@ if([string]::IsNullOrEmpty($accessToken))
 	Exit
 }
 
-$credentials = aws sso get-role-credentials --account-id $selectedAccount --role-name $selectedRole --access-token $accessToken --region $selectedRegion
+$credentials = aws sso get-role-credentials --account-id $selectedAccount --role-name $selectedRole --access-token $accessToken --region $selectedSSORegion
 
 $jsonCredentials = ($credentials | ConvertFrom-Json).rolecredentials[0]
 
@@ -77,6 +81,7 @@ $aws_secret_access_key = $jsonCredentials.secretAccessKey
 $aws_session_token = $jsonCredentials.sessionToken
 
 $fileContent = "[default]
+region=${selectedRegion}
 aws_access_key_id=${aws_access_key_id}
 aws_secret_access_key=${aws_secret_access_key}
 aws_session_token=${aws_session_token}"
