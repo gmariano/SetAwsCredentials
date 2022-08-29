@@ -33,7 +33,7 @@ function fShowMenu([System.String]$sMenuTitle,[System.Collections.IDictionary]$h
 	# Start Hotkeys mit "1"!
 	$iMenuHotKeyChar=49
 	foreach ($sKey in ($hMenuEntries.Keys | Sort-Object)){
-		$hMenu.Add([System.Int16]$iMenuLoopCount,[System.String]$sKey)
+		$hMenu.Add([System.Int16]$iMenuLoopCount,[System.String]$hMenuEntries[$sKey])
 		# Hotkey zuordnung zum Menueintrag
 		$hMenuHotKeyList.Add([System.Int16]$iMenuLoopCount,[System.Convert]::ToChar($iMenuHotKeyChar))
 		$hMenuHotKeyListReverse.Add([System.Convert]::ToChar($iMenuHotKeyChar),[System.Int16]$iMenuLoopCount)
