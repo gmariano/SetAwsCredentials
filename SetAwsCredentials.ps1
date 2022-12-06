@@ -38,9 +38,11 @@ $sso_regions=@{}
 $accounts=@{}
 $roles=@{}
 $regions=@{}
-Foreach($profileMatch in ($profileMatches | Sort-Object -Property Value)) {
+$count = 0
+Foreach($profileMatch in $profileMatches) {
 	$profile = $profileMatch.Groups[2].Value
-	$profiles.Add($profile, $profile)
+	$profiles.Add($count, $profile)
+	$count++	
 	$sso_region = $profileMatch.Groups[6].Value
 	$sso_regions.Add($profile, $sso_region)
 	$account = $profileMatch.Groups[10].Value
@@ -55,7 +57,7 @@ $selectedAccount = $accounts[$selectedProfile]
 $selectedRole = $roles[$selectedProfile]
 $selectedSSORegion = $sso_regions[$selectedProfile]
 $selectedRegion = $regions[$selectedProfile]
-Write-Host "Profile: ${profile}, Account: ${selectedAccount}, Role: ${selectedRole}, SSORegion: ${selectedSSORegion}"
+Write-Host "Profile: ${selectedProfile}, Account: ${selectedAccount}, Role: ${selectedRole}, SSORegion: ${selectedSSORegion}"
 
 $accessToken = GetAwsAccessToken
 if([string]::IsNullOrEmpty($accessToken))
