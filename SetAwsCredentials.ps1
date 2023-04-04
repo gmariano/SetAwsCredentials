@@ -37,7 +37,7 @@ $profiles=@{}
 $regions=@{}
 $accounts=@{}
 $roles=@{}
-Foreach($profileMatch in ($profileMatches | Sort-Object -Property Value)) {
+Foreach($profileMatch in $profileMatches) {
 	$profile = $profileMatch.Groups[2].Value
 	$profiles.Add($profile, $profile)
 	$region = $profileMatch.Groups[6].Value
@@ -51,7 +51,7 @@ $selectedProfile = fShowMenu "Choose profile" $profiles
 $selectedAccount = $accounts[$selectedProfile]
 $selectedRole = $roles[$selectedProfile]
 $selectedRegion = $regions[$selectedProfile]
-Write-Host "Profile: ${profile}, Account: ${selectedAccount}, Role: ${selectedRole}, Region: ${selectedRegion}"
+Write-Host "Profile: ${selectedProfile}, Account: ${selectedAccount}, Role: ${selectedRole}, Region: ${selectedRegion}"
 
 $accessToken = GetAwsAccessToken
 if([string]::IsNullOrEmpty($accessToken))
