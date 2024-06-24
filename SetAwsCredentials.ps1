@@ -9,7 +9,7 @@ function GetAwsAccessToken() {
         $content = Get-Content $file.FullName
         if ($content.Contains("startUrl")) {
             $fileTokenText = [string]::Join("`n", $content)
-            $match = [regex]::Match($fileTokenText, '"(?:accessToken|clientSecret)":\s*"([^"]*)",\s*"expiresAt":\s*"([^"]*)"')
+            $match = [regex]::Match($fileTokenText, '"accessToken":\s*"([^"]*)".*?"expiresAt":\s*"([^"]*)"')
             if ($match.Success) {
                 $accessToken = $match.Groups[1].Value
                 $expirationString = $match.Groups[2].Value
@@ -26,6 +26,7 @@ function GetAwsAccessToken() {
     }
     return $accessToken
 }
+
 
 $awsConfigFilePath = "C:\Users\${env:UserName}\.aws\config"
 $fileContent = Get-Content $awsConfigFilePath
