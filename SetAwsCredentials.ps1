@@ -1,33 +1,32 @@
 . .\menu.ps1
 
-function GetAwsAccessToken()
-{
-	$awsTokenFilePath = "C:\Users\${env:UserName}\.aws\sso\cache"
-	$accessToken=""
-	$files = Get-ChildItem $awsTokenFilePath
-	Foreach($file in $files)
-	{
-		$content = Get-Content $file.FullName
-		if($content.Contains("startUrl"))
-		{
-			$fileTokenText = [string]::Join("`n", $content)
-			$match = [regex]::Match($fileTokenText, 'accessToken": "(.*)(?=",)(.*)"expiresAt": "(.*)"}')
-			$accessToken = $match.Groups[1].Value
-			$expirationString=$match.Groups[3].Value
-			break;
-		}
-	}
-	if(!([string]::IsNullOrEmpty($expirationString)) -and  ([DateTime]$expirationString) -lt [DateTime]::UtcNow)
-	{
-		Write-Host "accessToken expired"
-		$accessToken = ""
-	}
-	else
-	{
-		Write-Host "Found valid accessToken"
-	}
-	return $accessToken
+function GetAwsAccessToken() {
+    $awsTokenFilePath = "C:\Users\${env:UserName}\.aws\sso\cache"
+    $accessToken = ""
+    $files = Get-ChildItem $awsTokenFilePath
+
+    foreach ($file in $files) {
+        $content = Get-Content $file.FullName
+        if ($content.Contains("startUrl")) {
+            $fileTokenText = [string]::Join("`n", $content)
+            $match = [regex]::Match($fileTokenText, '"accessToken":\s*"([^"]*)".*?"expiresAt":\s*"([^"]*)"')
+            if ($match.Success) {
+                $accessToken = $match.Groups[1].Value
+                $expirationString = $match.Groups[2].Value
+                break
+            }
+        }
+    }
+
+    if (!([string]::IsNullOrEmpty($expirationString)) -and ([DateTime]$expirationString) -lt [DateTime]::UtcNow) {
+        Write-Host "accessToken expired"
+        $accessToken = ""
+    } else {
+        Write-Host "Found valid accessToken"
+    }
+    return $accessToken
 }
+
 
 $awsConfigFilePath = "C:\Users\${env:UserName}\.aws\config"
 $fileContent = Get-Content $awsConfigFilePath
